@@ -2,118 +2,307 @@ package advent.day12;
 
 import advent.AdventOfCode;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class Day12{
+    public static final boolean USE_MIN_H_COST = false;
+    public static final boolean USE_MAX_H_COST = true;
+    public static final boolean USE_MAX_G_COST = false;
+    public static final boolean USE_GUI = true;
     //'S' - start, 'E' - end,
     public static int ROWS, COLS;
     public static char[][] map;
-    public static char[][] visual;
-    public static int[][] accessibleAtAll;
+    public static HashMap<Integer, PathPoint> closed = new HashMap<>(128);
+    public static HashMap<Integer, PathPoint> available = new HashMap<>(128);
     public static Point start, end;
+    public static int speedMs = 10;
     public static void main(String[] args){
-        part1();
+        //part1();
+        part2();
     }
 
-    private static void part1(){
-        List<String> lines = AdventOfCode.readDummy(12);
+    private static void part1() {
+        //List<String> lines = AdventOfCode.readCustom("kihau12.txt");
+        List<String> lines = AdventOfCode.readDay(12);
+        //List<String> lines = AdventOfCode.readDummy(12);
+        //min:82 for short12.txt
+        //List<String> lines = AdventOfCode.readCustom("short12.txt");
+
         setupEnvironment(lines);
-        printDistances();
+        if(USE_GUI){
+            GUI.main(null);
+        }
         System.out.println("ROWS:" + ROWS);
         System.out.println("COLS:" + COLS);
-        System.out.println();
-        int steps = 0;
-        //set of hashcodes
-        HashSet<Integer> visited = new HashSet<>();
-        LinkedList<Point> path = new LinkedList<>();
-        path.add(start);
-        Point currentPoint = start;
-        //map any route,
-        while(!currentPoint.equals(end)){
-            Point nextPoint;
-            while(true){
-                nextPoint = findCandidate(currentPoint, visited);
-                if(nextPoint == null){
-                    if(path.size() == 1){
-                        throw new IllegalStateException("There's no way to reach the target");
-                    }
-                    Point last = path.removeLast();
-                    currentPoint = path.getLast();
-                    visual[last.row][last.col] = '.';
-                    steps--;
-                }else{
-                    break;
-                }
-            }
-            path.add(nextPoint);
-            steps++;
-            currentPoint = nextPoint;
-            visited.add(currentPoint.hashCode());
-            visual[currentPoint.row][currentPoint.col] = 'T';
-            printMap(visual);
-            System.out.println(steps);
-            System.out.println();
-        }
-        System.out.println("steps: " + steps);
+        int distance = enterSearchLoop();
+        System.out.println(distance);
     }
-    //find the closest traversable point which has not yet been visited
-    //looks up, down, left and right
-    //returns null if no valid candidate is found
-    private static Point findCandidate(Point point, HashSet<Integer> visited){
-        List<Point> candidates = new ArrayList<>(4);
-        int upRow = point.row-1, upCol = point.col;
-        int downRow = point.row+1, downCol = point.col;
-        int leftRow = point.row, leftCol = point.col-1;
-        int rightRow = point.row, rightCol = point.col+1;
-        if(isWithin(upRow, upCol)){
-            candidates.add(new Point(upRow, upCol));
+    private static void part2(){
+        //(27,0) -> 354
+        //List<String> lines = AdventOfCode.readCustom("kihau12.txt");
+        List<String> lines = AdventOfCode.readDay(12);
+        //List<String> lines = AdventOfCode.readDummy(12);
+        //min:82 for short12.txt
+        //List<String> lines = AdventOfCode.readCustom("short12.txt");
+
+        setupEnvironment(lines);
+        int minFromA = Integer.MAX_VALUE;
+        Point minA = null;
+        //assuming that all valid A's are at column 0
+        final int col = 0;
+        for(int row = 0; row < ROWS; row++){
+            int d = runFor(row, col);
+            if(d < minFromA){
+                minFromA = d;
+                minA = new Point(row, col);
+            }
         }
-        if(isWithin(downRow, downCol)){
-            candidates.add(new Point(downRow, downCol));
+        int d = runFor(10, 0);
+        System.out.println("Distance: " + d);
+        //+-2
+        System.out.println("Shortest path from A: " + minFromA + "; point: " + minA);
+    }
+
+    private static int runFor(int row, int col){
+        start = new Point(row,col);
+        System.out.println("FOR: " + start);
+        closed = new HashMap<>(128);
+        available = new HashMap<>(128);
+        PathPoint.initializeContext(start, end);
+        if(USE_GUI){
+            GUI.passClosedMap(closed);
+            GUI.main(null);
+        }
+        return enterSearchLoop();
+
+    }
+
+    public static void sleep(int sleep){
+        try{
+            Thread.sleep(sleep);
+        }catch (InterruptedException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static int enterSearchLoop(){
+        int moves = 0;
+        PathPoint currentPoint = new PathPoint(start.row, start.col);
+
+        closed.put(start.hashCode(), currentPoint);
+        long st = System.currentTimeMillis();
+        //map shortest route,
+        while(!currentPoint.equals(end)){
+            currentPoint = findNext(currentPoint);
+            //possiblyReroute(currentPoint);
+            moves++;
+            int hash = currentPoint.hashCode();
+            closed.put(hash, currentPoint);
+            available.remove(hash);
+            if(USE_GUI){
+                GUI.paintPanelColor(currentPoint.row, currentPoint.col, Color.lightGray);
+                //GUI.paintOriginIndicators(available);
+                GUI.blockUpdate(moves);
+                //GUI.setPanelLabel(currentPoint.row, currentPoint.col, currentPoint.fCost);
+            }
+        }
+        long en = System.currentTimeMillis();
+        //GUI.setFCosts(available);
+        System.out.println("moves: " + moves);
+        System.out.println("time taken to explore: " + (en-st) + " ms");
+        int pathDistance = currentPoint.pathDistance();
+        System.out.println(pathDistance);
+
+        if(USE_GUI){
+            PathPoint back = currentPoint;
+            while(back != null){
+                sleep(speedMs);
+                GUI.paintPanelColor(back.row, back.col, Color.cyan);
+                back = back.origin;
+            }
+        }
+        return pathDistance;
+        //GUI.colorAllCs();
+    }
+
+    private static void possiblyReroute(Point current){
+        int upRow = current.row-1, upCol = current.col;
+        int downRow = current.row+1, downCol = current.col;
+        int leftRow = current.row, leftCol = current.col-1;
+        int rightRow = current.row, rightCol = current.col+1;
+
+        if(isWithin(rightRow, rightCol)){
+            Point p = new PathPoint(rightRow, rightCol);
         }
         if(isWithin(leftRow, leftCol)){
-            candidates.add(new Point(leftRow, leftCol));
+            Point p = new PathPoint(rightRow, rightCol);
         }
+        if(isWithin(upRow, upCol)){
+            Point p = new PathPoint(rightRow, rightCol);
+        }
+        if(isWithin(downRow, downCol)){
+            Point p = new PathPoint(rightRow, rightCol);
+        }
+    }
+
+    //chooses the next point to explore
+    //if no valid candidate can be found returns null
+    private static PathPoint findNext(PathPoint current){
+        int upRow = current.row-1, upCol = current.col;
+        int downRow = current.row+1, downCol = current.col;
+        int leftRow = current.row, leftCol = current.col-1;
+        int rightRow = current.row, rightCol = current.col+1;
+
         if(isWithin(rightRow, rightCol)){
-            candidates.add(new Point(rightRow, rightCol));
+            PathPoint pp = new PathPoint(rightRow, rightCol, current);
+            processNeighbor(current, pp);
         }
-        final int MAX_DISTANCE = Integer.MAX_VALUE;
-        int min = MAX_DISTANCE, index = -1;
-        int size = candidates.size();
-        for (int i = 0; i < size; i++){
-            Point p = candidates.get(i);
-            if(visited.contains(p.hashCode())){
-                continue;
+        if(isWithin(leftRow, leftCol)){
+            PathPoint pp = new PathPoint(leftRow, leftCol, current);
+            processNeighbor(current, pp);
+        }
+        if(isWithin(upRow, upCol)){
+            PathPoint pp = new PathPoint(upRow, upCol, current);
+            processNeighbor(current, pp);
+        }
+        if(isWithin(downRow, downCol)){
+            PathPoint pp = new PathPoint(downRow, downCol, current);
+            processNeighbor(current, pp);
+        }
+
+        if(available.size() == 0){
+            throw new IllegalStateException("No available points to proceed");
+        }
+
+        List<PathPoint> minimals = new ArrayList<>();
+        int min = Integer.MAX_VALUE;
+        for (PathPoint candidate : available.values()){
+            if (min > candidate.fCost){
+                minimals.clear();
+                min = candidate.fCost;
+                minimals.add(candidate);
             }
-            if(canStep(point.row, point.col, p.row, p.col)){
-                int distance = distance(end.row, end.col, p.row, p.col);
-                if(min > distance){
-                    min = distance;
+            if (min == candidate.fCost){
+                minimals.add(candidate);
+            }
+        }
+        int size = minimals.size();
+        if(size == 0){
+            throw new IllegalStateException("No minimal points to proceed for " + current);
+        }
+
+        if(size ==  1){
+            return minimals.get(0);
+        }
+
+        if(USE_MIN_H_COST && !USE_MAX_G_COST){
+            int hMin = Integer.MAX_VALUE, index = -1;
+            //scan minimals - choose min h cost
+            for (int i = 0; i < minimals.size(); i++){
+                PathPoint p = minimals.get(i);
+                if (hMin > p.hCost){
+                    hMin = p.hCost;
                     index = i;
                 }
             }
+            return minimals.get(index);
         }
-        if(min == MAX_DISTANCE){
-            System.out.println("No appropriate candidate could be found for: " + point);
-            return null;
-        }
-        return candidates.get(index);
-    }
-
-    private static void printDistances(){
-        int[][] distances = new int[ROWS][COLS];
-        for (int i = 0; i < map.length; i++){
-            char[] row = map[i];
-            for (int j = 0; j < row.length; j++){
-                if(map[i][j] != 'E' && map[i][j] != 'S'){
-                    int dist = distance(end.row, end.col, i, j);
-                    distances[i][j] = dist;
-                }else if(map[i][j] == 'S'){
-                    distances[i][j] = 0;
+        if(USE_MAX_G_COST && !USE_MIN_H_COST){
+            int gMax = Integer.MIN_VALUE, index = -1;
+            //scan minimals - choose max g cost
+            for (int i = 0; i < minimals.size(); i++){
+                PathPoint p = minimals.get(i);
+                if (gMax < p.gCost){
+                    gMax = p.gCost;
+                    index = i;
                 }
             }
+            return minimals.get(index);
         }
-        printMap(distances);
+        if(USE_MAX_H_COST && !USE_MIN_H_COST && !USE_MAX_G_COST){
+            int hMax = Integer.MIN_VALUE, index = -1;
+            //scan minimals - choose max h cost
+            for (int i = 0; i < minimals.size(); i++){
+                PathPoint p = minimals.get(i);
+                if (hMax < p.hCost){
+                    hMax = p.hCost;
+                    index = i;
+                }
+            }
+            return minimals.get(index);
+        }
+        return minimals.get(0);
+    }
+
+
+    //meant to process nodes which are in the immediate vicinity of current node
+    private static void processNeighbor(PathPoint current, PathPoint neighbor){
+        int hashNeighbor = neighbor.hashCode();
+        //assuming some other method is responsible for removing 'visited' nodes from 'available'
+        if(closed.containsKey(hashNeighbor)){
+
+            /*PathPoint alreadyVisited = closed.get(hashNeighbor);
+            PathPoint neighborOrigin = alreadyVisited.origin;
+            if (neighborOrigin == null || neighborOrigin.equals(current) || alreadyVisited.equals(current.origin)){
+                return;
+            }
+            //make sure it is not repointed toward a point it could have not stepped from
+            if(!canStep(current.row, current.col, alreadyVisited.row, alreadyVisited.col)){
+                return;
+            }
+            int prvsDistance = alreadyVisited.pathDistance();
+            int currentDistance = current.pathDistance() + 1;
+            if(currentDistance < prvsDistance){
+                alreadyVisited.origin = current;
+            }
+
+            // or by pointing current origin to closed (attaching current to closed)
+            if(!canStep(alreadyVisited.row, alreadyVisited.col, current.row, current.col)){
+                return;
+            }
+            int newPath = alreadyVisited.pathDistance() + 1;
+            int oldPath = current.pathDistance();
+            if(newPath < oldPath){
+                current.origin = alreadyVisited;
+            }*/
+            return;
+        }
+        if(available.containsKey(hashNeighbor)){
+            // contained - check if we can make the path shorter
+            PathPoint anAvailable = available.get(hashNeighbor);
+            if (anAvailable.origin.equals(current)){
+                return;
+            }
+            //make sure it is not repointed toward a point it could have not stepped from
+            if(!canStep(current.row, current.col, anAvailable.row, anAvailable.col)){
+                return;
+            }
+            // by pointing the origin toward current (attaching available to current)
+            int prvsDistance = anAvailable.pathDistance();
+            int currentDistance = current.pathDistance() + 1;
+            if(currentDistance < prvsDistance){
+                anAvailable.origin = current;
+            }
+            // or by pointing current origin to available (attaching current to available)
+            if(!canStep(anAvailable.row, anAvailable.col, current.row, current.col)){
+                return;
+            }
+            //override anyway
+            int newPath = anAvailable.pathDistance();
+            int oldPath = current.pathDistance();
+            if(newPath < oldPath){
+                current.origin = anAvailable;
+            }
+
+
+        }else{
+            //do not add it as a possibility if it cannot be stepped to
+            if(canStep(current.row, current.col, neighbor.row, neighbor.col)){
+                available.put(hashNeighbor, neighbor);
+            }
+        }
     }
 
     private static boolean isWithin(int row, int col){
@@ -122,6 +311,7 @@ public class Day12{
         }
         return col < COLS && col > -1;
     }
+
     //f - from, t - to,
     public static boolean canStep(int fRow, int fCol, int toRow, int toCol){
         char fChar = map[fRow][fCol];
@@ -134,28 +324,10 @@ public class Day12{
         }
         return toChar - fChar <= 1;
     }
-    private static int distance(int row1, int col1, int row2, int col2){
-        return Math.abs(col1 - col2) + Math.abs(row1 - row2);
-    }
-    private static void printMap(char[][] map){
-        for(char[] row : map){
-            System.out.println(Arrays.toString(row));
-        }
-    }
-    private static void printMap(int[][] map){
-        for(int[] row : map){
-            System.out.println(Arrays.toString(row));
-        }
-    }
-    private static void setupEnvironment(List<String> lines){
+    public static void setupEnvironment(List<String> lines){
         ROWS = lines.size();
         COLS = lines.get(0).length();
         map = new char[ROWS][COLS];
-        visual = new char[ROWS][COLS];
-        for(char[] row : visual){
-            Arrays.fill(row, '.');
-        }
-        accessibleAtAll = new int[ROWS][COLS];
         //map input
         for (int i = 0; i < lines.size(); i++){
             map[i] = lines.get(i).toCharArray();
@@ -178,5 +350,11 @@ public class Day12{
                 }
             }
         }
+        //end = new PathPoint(32,61);
+        //start = new PathPoint(35,83);
+        //end = new PathPoint(20,0);
+        PathPoint.initializeContext(start, end);
+        GUI.initializeContext(ROWS, COLS);
+        GUI.passClosedMap(closed);
     }
 }
