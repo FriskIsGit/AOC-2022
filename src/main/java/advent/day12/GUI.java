@@ -29,7 +29,6 @@ public class GUI{
         }
         frame = new JFrame();
         addKeyboardListener();
-        Random random = new Random();
         if(MONITOR_FRAME_SIZE){
             Timer timer = new Timer();
             TimerTask task = new TimerTask(){
@@ -111,13 +110,11 @@ public class GUI{
         KeyAdapter keyAdapter = new KeyAdapter(){
             @Override
             public void keyTyped(KeyEvent typed){
-
             }
 
             @Override
             public void keyPressed(KeyEvent press){
                 char key = press.getKeyChar();
-                System.out.println(key);
                 switch (key){
                     //backtrack point
                     case 'i':
@@ -197,7 +194,6 @@ public class GUI{
                         GUI.colorAll(mark.charAt(0), Color.PINK);
                         break;
                 }
-                System.out.println(currentRow + "x" + currentCol);
             }
 
             private void doLocationChangeEvents(){
@@ -272,12 +268,12 @@ public class GUI{
         }
     }
 
-    public static void setPanelLabel(int row, int col, int fCost){
+    public static void setPanelLabel(int row, int col, String anything){
         String target = row + "+" + col;
         for(JPanel panel : panels){
             if(panel.getName().equals(target)){
                 JLabel label = (JLabel) panel.getComponent(0);
-                label.setText(String.valueOf(fCost));
+                label.setText(anything);
             }
         }
     }
@@ -309,7 +305,6 @@ public class GUI{
         if(!BLOCK_UPDATE){
             return;
         }
-        System.out.println("M:" + moves + ";U:" + update);
         while(update < moves){
         }
     }

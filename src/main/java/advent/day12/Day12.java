@@ -25,12 +25,7 @@ public class Day12{
     }
 
     private static void part1() {
-        //List<String> lines = AdventOfCode.readCustom("388.txt");
-        //List<String> lines = AdventOfCode.readCustom("kihau12.txt");
         List<String> lines = AdventOfCode.readDay(12);
-        //List<String> lines = AdventOfCode.readDummy(12);
-        //min:82 for short12.txt
-        //List<String> lines = AdventOfCode.readCustom("short12.txt");
 
         setupEnvironment(lines);
         if(USE_GUI){
@@ -39,15 +34,10 @@ public class Day12{
         System.out.println("ROWS:" + ROWS);
         System.out.println("COLS:" + COLS);
         int distance = enterSearchLoop();
-        System.out.println(distance);
+        System.out.println("Least steps: " + distance);
     }
     private static void part2(){
-        //(27,0) -> 354
-        //List<String> lines = AdventOfCode.readCustom("kihau12.txt");
         List<String> lines = AdventOfCode.readDay(12);
-        //List<String> lines = AdventOfCode.readDummy(12);
-        //min:82 for short12.txt
-        //List<String> lines = AdventOfCode.readCustom("short12.txt");
 
         setupEnvironment(lines);
         int minFromA = Integer.MAX_VALUE;
@@ -61,8 +51,6 @@ public class Day12{
                 minA = new Point(row, col);
             }
         }
-        int d = runFor(10, 0);
-        System.out.println("Distance: " + d);
         //+-2
         System.out.println("Shortest path from A: " + minFromA + "; point: " + minA);
     }
@@ -113,7 +101,6 @@ public class Day12{
         System.out.println("moves: " + moves);
         System.out.println("time taken to explore: " + (en-st) + " ms");
         int pathDistance = currentPoint.pathDistance();
-        System.out.println(pathDistance);
 
         if(USE_GUI){
             PathPoint back = currentPoint;
@@ -124,7 +111,6 @@ public class Day12{
             }
         }
         return pathDistance;
-        //GUI.colorAllCs();
     }
 
     //chooses the next point to explore
@@ -295,9 +281,6 @@ public class Day12{
                 }
             }
         }
-        //end = new PathPoint(32,61);
-        //start = new PathPoint(35,83);
-        //end = new PathPoint(20,0);
         PathPoint.setEnd(end);
         GUI.initializeContext(ROWS, COLS);
         GUI.passClosedMap(closed);
