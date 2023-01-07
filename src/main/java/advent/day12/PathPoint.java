@@ -1,35 +1,33 @@
 package advent.day12;
 
 public class PathPoint extends Point{
-    public static Point START, END;
+    public static Point END;
     //where fCost = gCost + hCost
     //gCost - distance from START point
     //hCost - distance from END point
-    public int fCost, gCost, hCost;
+    public int fCost = 0, gCost = 0, hCost = 0;
     //origin is where this node came from
     public PathPoint origin;
 
-    public static void initializeContext(Point START, Point END){
-        PathPoint.START = START;
+    public static void setEnd(Point END){
         PathPoint.END = END;
     }
-
+    //this constructor should only be called to set the start point
     public PathPoint(int row, int col){
         super(row, col);
     }
     public PathPoint(int row, int col, PathPoint originPoint){
         super(row, col);
         this.origin = originPoint;
-        initializeCosts();
+        calculateCosts();
     }
 
-    private void initializeCosts(){
-        //from starting point
-        gCost = distance(START.row, START.col, row, col);
-        //from end point
-        hCost = distance(END.row, END.col, row, col);
+    public void calculateCosts(){
+        gCost = pathDistance();
+        hCost = distance(row, col, END.row, END.col);
         fCost = gCost + hCost;
     }
+
     public static int distPrvs(int row1, int col1, int row2, int col2){
         return (row1-row2)*(row1-row2) + (col1-col2)*(col1-col2);
     }

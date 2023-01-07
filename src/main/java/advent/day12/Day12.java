@@ -3,6 +3,7 @@ package advent.day12;
 import advent.AdventOfCode;
 
 import java.awt.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
@@ -19,11 +20,12 @@ public class Day12{
     public static Point start, end;
     public static int speedMs = 10;
     public static void main(String[] args){
-        //part1();
-        part2();
+        part1();
+        //part2();
     }
 
     private static void part1() {
+        //List<String> lines = AdventOfCode.readCustom("388.txt");
         //List<String> lines = AdventOfCode.readCustom("kihau12.txt");
         List<String> lines = AdventOfCode.readDay(12);
         //List<String> lines = AdventOfCode.readDummy(12);
@@ -70,7 +72,6 @@ public class Day12{
         System.out.println("FOR: " + start);
         closed = new HashMap<>(128);
         available = new HashMap<>(128);
-        PathPoint.initializeContext(start, end);
         if(USE_GUI){
             GUI.passClosedMap(closed);
             GUI.main(null);
@@ -96,7 +97,6 @@ public class Day12{
         //map shortest route,
         while(!currentPoint.equals(end)){
             currentPoint = findNext(currentPoint);
-            //possiblyReroute(currentPoint);
             moves++;
             int hash = currentPoint.hashCode();
             closed.put(hash, currentPoint);
@@ -125,26 +125,6 @@ public class Day12{
         }
         return pathDistance;
         //GUI.colorAllCs();
-    }
-
-    private static void possiblyReroute(Point current){
-        int upRow = current.row-1, upCol = current.col;
-        int downRow = current.row+1, downCol = current.col;
-        int leftRow = current.row, leftCol = current.col-1;
-        int rightRow = current.row, rightCol = current.col+1;
-
-        if(isWithin(rightRow, rightCol)){
-            Point p = new PathPoint(rightRow, rightCol);
-        }
-        if(isWithin(leftRow, leftCol)){
-            Point p = new PathPoint(rightRow, rightCol);
-        }
-        if(isWithin(upRow, upCol)){
-            Point p = new PathPoint(rightRow, rightCol);
-        }
-        if(isWithin(downRow, downCol)){
-            Point p = new PathPoint(rightRow, rightCol);
-        }
     }
 
     //chooses the next point to explore
@@ -240,33 +220,8 @@ public class Day12{
     //meant to process nodes which are in the immediate vicinity of current node
     private static void processNeighbor(PathPoint current, PathPoint neighbor){
         int hashNeighbor = neighbor.hashCode();
-        //assuming some other method is responsible for removing 'visited' nodes from 'available'
+        // assuming some other method is responsible for removing 'visited' nodes from 'available'
         if(closed.containsKey(hashNeighbor)){
-
-            /*PathPoint alreadyVisited = closed.get(hashNeighbor);
-            PathPoint neighborOrigin = alreadyVisited.origin;
-            if (neighborOrigin == null || neighborOrigin.equals(current) || alreadyVisited.equals(current.origin)){
-                return;
-            }
-            //make sure it is not repointed toward a point it could have not stepped from
-            if(!canStep(current.row, current.col, alreadyVisited.row, alreadyVisited.col)){
-                return;
-            }
-            int prvsDistance = alreadyVisited.pathDistance();
-            int currentDistance = current.pathDistance() + 1;
-            if(currentDistance < prvsDistance){
-                alreadyVisited.origin = current;
-            }
-
-            // or by pointing current origin to closed (attaching current to closed)
-            if(!canStep(alreadyVisited.row, alreadyVisited.col, current.row, current.col)){
-                return;
-            }
-            int newPath = alreadyVisited.pathDistance() + 1;
-            int oldPath = current.pathDistance();
-            if(newPath < oldPath){
-                current.origin = alreadyVisited;
-            }*/
             return;
         }
         if(available.containsKey(hashNeighbor)){
@@ -275,7 +230,7 @@ public class Day12{
             if (anAvailable.origin.equals(current)){
                 return;
             }
-            //make sure it is not repointed toward a point it could have not stepped from
+            // make sure it is not repointed toward a point it could have not stepped from
             if(!canStep(current.row, current.col, anAvailable.row, anAvailable.col)){
                 return;
             }
@@ -284,18 +239,8 @@ public class Day12{
             int currentDistance = current.pathDistance() + 1;
             if(currentDistance < prvsDistance){
                 anAvailable.origin = current;
+                anAvailable.calculateCosts();
             }
-            // or by pointing current origin to available (attaching current to available)
-            if(!canStep(anAvailable.row, anAvailable.col, current.row, current.col)){
-                return;
-            }
-            //override anyway
-            int newPath = anAvailable.pathDistance();
-            int oldPath = current.pathDistance();
-            if(newPath < oldPath){
-                current.origin = anAvailable;
-            }
-
 
         }else{
             //do not add it as a possibility if it cannot be stepped to
@@ -353,7 +298,7 @@ public class Day12{
         //end = new PathPoint(32,61);
         //start = new PathPoint(35,83);
         //end = new PathPoint(20,0);
-        PathPoint.initializeContext(start, end);
+        PathPoint.setEnd(end);
         GUI.initializeContext(ROWS, COLS);
         GUI.passClosedMap(closed);
     }
