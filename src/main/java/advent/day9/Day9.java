@@ -1,144 +1,184 @@
 package advent.day9;
 
 import advent.AdventOfCode;
+import advent.day12.Point;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Day9{
-    public static final int GRID_ROWS = 30;
-    public static final int GRID_COLUMNS = 30;
+    //part1: grid size 700 x 700 for full input
+    //part1: grid size 12 x 12 for dummy input
+
+    //part2: grid size 30 x 30 for dummy input
+    public static final int GRID_ROWS = 900;
+    public static final int GRID_COLUMNS = 900;
     public static final int ROPE_PARTS = 10;
+    static Point head;
+    static Point tail;
 
     public static void main(String[] args){
-        List<String> lines = AdventOfCode.readDummy(9);
-        part1(lines);
-        //part2 is wrong for some reason
+        //List<String> lines = AdventOfCode.readDummy(9);
+        List<String> lines = AdventOfCode.readDay(9);
+        //part1(lines);
         part2(lines);
     }
 
     private static void part2(List<String> lines){
-        List<RopePart> rope = new ArrayList<>();
+        System.out.println("Map size[rows x cols]: " + GRID_ROWS + "x" + GRID_COLUMNS);
+
+        char[][] map = new char[GRID_ROWS][GRID_COLUMNS];
+        fillMapWithEmptyValues(map);
         boolean[][] visited = new boolean[GRID_ROWS][GRID_COLUMNS];
-        //fill
-        for(int i = 0; i<ROPE_PARTS; i++){
-            RopePart part = new RopePart(GRID_ROWS/2, GRID_COLUMNS/2);
-            rope.add(part);
-            part.setPrvs(part);
+        //LINE - BEGIN
+        head = new Point(GRID_ROWS/2, GRID_COLUMNS/2);
+        tail = new Point(GRID_ROWS/2, GRID_COLUMNS/2);
+        List<Point> parts = new ArrayList<>();
+        parts.add(head);
+        for (int i = 0; i < 8; i++){
+            parts.add(new Point(head.row, head.col));
         }
+        parts.add(tail);
+        //LINE - END
         for(String line : lines){
             char dir = line.charAt(0);
-            int move = Integer.parseInt(line.substring(2));
-            System.out.println(dir + " " + move);
-            RopePart head;
-            for (int m = 0; m < move; m++){
-                System.out.println("--------");
-                head = rope.get(0);
-                head.setPrvs(head);
+            int moves = Integer.parseInt(line.substring(2));
+
+            System.out.println(dir + " " + moves);
+            for (int i = 0; i < moves; i++){
+                //update previous for each part
                 switch (dir){
                     case 'L':
-                        head.x = head.x - 1;
+                        head.col = head.col-1;
                         break;
                     case 'R':
-                        head.x = head.x + 1;
+                        head.col = head.col+1;
                         break;
                     case 'U':
-                        head.y = head.y - 1;
+                        head.row = head.row-1;
                         break;
                     case 'D':
-                        head.y = head.y + 1;
+                        head.row = head.row+1;
                         break;
                 }
-                for(int r = 0; r < ROPE_PARTS-1; r++){
-                    RopePart front = rope.get(r);
-                    RopePart back = rope.get(r+1);
-
-                    boolean touching = isTouching(front.x, front.y, back.x, back.y);
-                    if(!touching){
-                        //same axis situation
-                        if(front.x == back.x || front.y == back.y){
-                            back.setPrvs(back);
-                            back.setXY(front.prvs);
-                        }
-                        //move diagonally
-                        else{
-                            back.setPrvs(back);
-                            int min = 100;
-                            int dUL = distance(front.x, front.y, back.x-1, back.y-1);
-                            int dUR = distance(front.x, front.y, back.x+1, back.y-1);
-                            int dBL = distance(front.x, front.y, back.x-1, back.y+1);
-                            int dBR = distance(front.x, front.y, back.x+1, back.y+1);
-                            min = Math.min(dUL, min);
-                            min = Math.min(dUR, min);
-                            min = Math.min(dBL, min);
-                            min = Math.min(dBR, min);
-                            if (min == dUL){
-                                back.setXY(back.x-1, back.y-1);
-                            }
-                            else if (min == dUR){
-                                back.setXY(back.x+1, back.y-1);
-                            }
-                            else if (min == dBL){
-                                back.setXY(back.x-1, back.y+1);
-                            }
-                            else if (min == dBR){
-                                back.setXY(back.x+1, back.y+1);
-                            }
-
-                        };
-                    }
-                }
-                Point tail = rope.get(ROPE_PARTS-1);
-                visited[tail.x][tail.y] = true;
-                printGrid(rope);
-                outer:{
-
-                }
-
+                repositionParts(parts);
+                visited[tail.row][tail.col] = true;
+                //System.out.println(ropePartsAsString(map, parts));
             }
+
         }
         int visits = getVisitedCount(visited);
-        System.out.println("Visited2: " + visits);
+        System.out.println("PART2: " + visits);
     }
 
-    private static int distance(int x, int y, int x2, int y2){
-        return (int)Math.sqrt((x-x2) * (x-x2) + (y-y2) * (y-y2));
+    public static void repositionParts(List<Point> parts){
+        for (int j = 0; j < parts.size()-1; j++){
+            Point p1 = parts.get(j);
+            Point p2 = parts.get(j+1);
+            int distance = distance(p1.row, p1.col, p2.row, p2.col);
+            if(distance <= 1){
+                //next to or overlapping
+                continue;
+            }
+            if(distance == 2){
+                //diagonal
+                boolean diagonal = Math.abs(p1.row - p2.row) == 1 && Math.abs(p1.col - p2.col) == 1;
+                if(diagonal){
+                    continue;
+                }
+                //either same x or same y
+                Day9.repositionOnSameAxis(p1, p2);
+                continue;
+            }
+            //distance 3 or 4 - definitely diagonal
+            Day9.repositionDiagonally(p1, p2);
+        }
+    }
+
+    //reposition p2 to p1
+    protected static void repositionOnSameAxis(Point p1, Point p2){
+        Point left = new Point(p2.row, p2.col - 1);
+        Point right = new Point(p2.row, p2.col + 1);
+        Point up = new Point(p2.row-1, p2.col);
+        Point down = new Point( p2.row+1, p2.col);
+        Point[] candidates = {left, right, up, down};
+
+        for(Point candidate : candidates){
+            if(distance(p1, candidate) == 1){
+                p2.row = candidate.row;
+                p2.col = candidate.col;
+                return;
+            }
+        }
+    }
+
+    //distance 3-4 should reposition to distance 1 or 2
+    protected static void repositionDiagonally(Point p1, Point p2){
+        Point topLeft = new Point(p2.row-1, p2.col - 1);
+        Point topRight = new Point(p2.row - 1, p2.col + 1);
+        Point bottomLeft = new Point(p2.row+1, p2.col-1);
+        Point bottomRight = new Point(p2.row+1, p2.col+1);
+        Point[] candidates = {topLeft, topRight, bottomLeft, bottomRight};
+
+        for(Point candidate : candidates){
+            if(distance(p1, candidate) == 1){
+                p2.row = candidate.row;
+                p2.col = candidate.col;
+                return;
+            }
+        }
+        for(Point candidate : candidates){
+            if(distance(p1, candidate) == 2){
+                p2.row = candidate.row;
+                p2.col = candidate.col;
+                return;
+            }
+        }
     }
 
     private static void part1(List<String> lines){
+        System.out.println("Map size[rows x cols]: " + GRID_ROWS + "x" + GRID_COLUMNS);
+
+        char[][] map = new char[GRID_ROWS][GRID_COLUMNS];
+        fillMapWithEmptyValues(map);
+
         boolean[][] visited = new boolean[GRID_ROWS][GRID_COLUMNS];
-        int headRow = GRID_ROWS/2, headCol = GRID_COLUMNS/2;
-        int tailRow = GRID_ROWS/2, tailCol = GRID_COLUMNS/2;
+
+        Point head = new Point(GRID_ROWS/2, GRID_COLUMNS/2);
+        Point tail = new Point(GRID_ROWS/2, GRID_COLUMNS/2);
         for(String line : lines){
             char dir = line.charAt(0);
-            int move = Integer.parseInt(line.substring(2));
-            //System.out.println(dir + " " + move);
+            int moves = Integer.parseInt(line.substring(2));
+
             //previous head position
             int prvsRow, prvsCol;
-            for (int i = 0; i < move; i++){
-                prvsRow = headRow;
-                prvsCol = headCol;
-                //printPositionOnGrid(headRow, headCol, tailRow, tailCol);
+            //System.out.println(dir + " " + moves);
+            for (int i = 0; i < moves; i++){
+                prvsRow = head.row;
+                prvsCol = head.col;
                 switch (dir){
                     case 'L':
-                        headCol = headCol-1;
+                        head.col = head.col-1;
                         break;
                     case 'R':
-                        headCol = headCol+1;
+                        head.col = head.col+1;
                         break;
                     case 'U':
-                        headRow = headRow-1;
+                        head.row = head.row-1;
                         break;
                     case 'D':
-                        headRow = headRow+1;
+                        head.row = head.row+1;
                         break;
                 }
-                boolean isTouching = isTouching(headRow, headCol, tailRow, tailCol);
+                boolean isTouching = isTouching(head.row, head.col, tail.row, tail.col);
                 if(!isTouching){
-                    tailRow = prvsRow;
-                    tailCol = prvsCol;
+                    tail.row = prvsRow;
+                    tail.col = prvsCol;
                 }
-                visited[tailRow][tailCol] = true;
+                visited[tail.row][tail.col] = true;
+                //printMapHeadTail(map, head, tail);
+                //System.out.println();
             }
 
         }
@@ -148,59 +188,77 @@ public class Day9{
 
     //this can be simplified
     public static boolean isTouching(int x, int y, int x2, int y2){
-        return Math.sqrt((x-x2) * (x-x2) + (y-y2) * (y-y2)) < 2;
+        int distance = distance(x, y, x2, y2);
+        if(distance <= 1){
+            //next to or overlapping
+            return true;
+        }
+        if(distance == 2){
+            //diagonal
+            return Math.abs(x - x2) == 1 && Math.abs(y - y2) == 1;
+        }
+        return false;
     }
-    private static int getVisitedCount(boolean[][] visited){
+
+    static int getVisitedCount(boolean[][] visited){
         int sum = 0;
         for (boolean[] booleans : visited){
-            for (int col = 0; col < visited[0].length; col++){
-                if (booleans[col])
+            for (boolean aBoolean : booleans){
+                if (aBoolean)
                     sum++;
             }
         }
         return sum;
     }
-    private static void printGrid(int headRow, int headCol, int tailRow, int tailCol){
-        for(int row = 0; row < GRID_ROWS; row++){
-            for (int col = 0; col < GRID_COLUMNS; col++){
-                if(row == headRow && col == headCol){
-                    System.out.print('H');
-                    continue;
-                }else if (row == tailRow && col == tailCol){
-                    System.out.print('T');
-                    continue;
-                }
-                System.out.print('.');
-            }
-            System.out.println();
+    static void fillMapWithEmptyValues(char[][] map){
+        for(char[] row : map){
+            Arrays.fill(row, '.');
         }
     }
-    private static void printGrid(List<RopePart> rope){
-        for(int row = 0; row < GRID_ROWS; row++){
-            for (int col = 0; col < GRID_COLUMNS; col++){
-                /*RopePart head = rope.get(0);
-                RopePart tail = rope.get(ROPE_PARTS-1);
-                if(row == head.x && col == head.y){
-                    System.out.print('H');
-                    continue;
-                }else if (row == tail.x && col == tail.y){
-                    System.out.print('T');
-                    continue;
-                }*/
-                boolean roped = false;
-                for (int i = 0; i < rope.size(); i++){
-                    RopePart part = rope.get(i);
-                    if (row == part.y && col == part.x){
-                        roped = true;
-                        System.out.print(i);
-                        break;
+    public static void printMapHeadTail(char[][] map, Point head, Point tail){
+        boolean same = head.equals(tail);
+        map[head.row][head.col] = 'H';
+        if(!same){
+            map[tail.row][tail.col] = 'T';
+        }
+
+        for(char[] row : map){
+            System.out.println(Arrays.toString(row));
+        }
+        map[head.row][head.col] = '.';
+        map[tail.row][tail.col] = '.';
+    }
+    protected static String ropePartsAsString(char[][] map, List<Point> parts){
+        StringBuilder sb = new StringBuilder();
+        for (int row = 0; row < map.length; row++){
+            for (int col = 0; col < map[0].length; col++){
+                for(int reverse = parts.size()-1; reverse>-1; reverse--){
+                    Point part = parts.get(reverse);
+                    if(row == part.row && col == part.col){
+                        map[row][col] = (char) (reverse + 48);
                     }
                 }
-                if(!roped){
-                    System.out.print('.');
-                }
             }
-            System.out.println();
         }
+
+        for(char[] row : map){
+            for (char c : row){
+                sb.append(c).append(' ');
+            }
+            sb.append('\n');
+        }
+        for (int row = 0; row < map.length; row++){
+            for (int col = 0; col < map[0].length; col++){
+                //draw visited
+                map[row][col] = '.';
+            }
+        }
+        return sb.toString();
+    }
+    public static int distance(int row1, int col1, int row2, int col2){
+        return Math.abs(col1 - col2) + Math.abs(row1 - row2);
+    }
+    public static int distance(Point p1, Point p2){
+        return Math.abs(p1.col - p2.col) + Math.abs(p1.row - p2.row);
     }
 }
