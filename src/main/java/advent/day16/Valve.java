@@ -10,7 +10,7 @@ public class Valve{
     public int flowRate;
     public int index = -1;
     public boolean isMajor;
-    public List<Valve> valves = new ArrayList<>();
+    public List<Connection> connections = new ArrayList<>();
 
     public Valve(String name, int flowRate){
         this.name = name;
@@ -41,9 +41,9 @@ public class Valve{
     public String toString(){
         StringBuilder str = new StringBuilder();
         str.append('[').append(name).append(':').append(flowRate).append(" -> ");
-        for (int i = 0; i < valves.size(); i++){
-            str.append(valves.get(i).name);
-            if(i != valves.size()-1){
+        for (int i = 0; i < connections.size(); i++){
+            str.append(connections.get(i).valve.name);
+            if(i != connections.size()-1){
                 str.append(", ");
             }
         }

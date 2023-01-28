@@ -3,6 +3,8 @@ package advent.day16;
 import advent.AdventOfCode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class Day16{
@@ -18,10 +20,52 @@ public class Day16{
 
     public static void main(String[] args){
         List<String> lines = AdventOfCode.readDay(16);
+        //List<String> lines = AdventOfCode.readDummy(16);
         List<Valve> allValves = parseValves(lines);
-        part1(allValves);
+        long st = System.currentTimeMillis();
+        List<Valve> majorValves = simplifyGraph(allValves);
+        long en = System.currentTimeMillis();
+        System.out.println("Time taken: " + (en-st));
+        System.out.println(majorValves.size());
+        //part1(allValves);
     }
 
+    private static List<Valve> simplifyGraph(List<Valve> valves){
+        List<Valve> majorValves = new ArrayList<>();
+        for(Valve valve : valves){
+            if(valve.isMajor){
+                List<Connection> cons = valve.connections;
+                int initialSize = cons.size();
+                //ConcurrentModificationException will be thrown if for each loop is used
+                for(int i = 0; i<initialSize; i++){
+                    Connection con = cons.get(i);
+                    setMajorConnections(con.valve, valve, 1, valve);
+                }
+                //remove no longer valid connections
+                valve.connections.removeIf(con -> !con.valve.isMajor);
+                majorValves.add(valve);
+            }
+        }
+        return majorValves;
+    }
+
+    private static void setMajorConnections(Valve current, Valve previous, int distance, Valve dispatchingValve){
+        if(current.isMajor){
+            //don't duplicate connections as immediate ones should have been added during parsing
+            if(distance == 1){
+                return;
+            }
+            dispatchingValve.connections.add(new Connection(current, distance));
+            return;
+        }
+        for(Connection c : current.connections){
+            //don't go back where you came from
+            if(c.valve == previous){
+                continue;
+            }
+            setMajorConnections(c.valve, current, distance+1, dispatchingValve);
+        }
+    }
 
     private static void part2(){
         List<String> lines = AdventOfCode.readDummy(16);
@@ -90,10 +134,10 @@ public class Day16{
         }
         int max = 0;
 
-        for(Valve connection : startingValve.valves){
-            int pressure = explore(connection, 2, startingValve, new boolean[majorValves]);
-            max = Math.max(pressure, max);
-        }
+//        for(Valve connection : startingValve.valves){
+//            int pressure = explore(connection, 2, startingValve, new boolean[majorValves]);
+//            max = Math.max(pressure, max);
+//        }
         return max;
     }
 
@@ -106,7 +150,7 @@ public class Day16{
         int valvePressure = valve.getPressure(minute);
 
         int maxNodePressure = 0;
-        for(Valve con : valve.valves){
+        /*for(Valve con : valve.valves){
             if(valve.isMajor){
                 //if is opened - always go to connection (previous mistake, not acknowledging the state after the call)
                 boolean[] openedCopy1 = copyOf(opened);
@@ -131,7 +175,7 @@ public class Day16{
                 int tempPressure = explore(con, minute+1, valve, copyOf(opened));
                 maxNodePressure = Math.max(tempPressure, maxNodePressure);
             }
-        }
+        }*/
         return maxNodePressure;
     }
 
@@ -156,12 +200,12 @@ public class Day16{
             Valve valve = allValves.get(v);
             int whitespace = line.indexOf(' ', VALVE_NAMES_OFFSET);
             for (int i = whitespace+1; i < line.length(); i+=4){
-                String aName = line.substring(i, i+2);
+                String conName = line.substring(i, i+2);
                 for (int j = 0; j < valves; j++){
                     if(j != v){
                         Valve connectedValve = allValves.get(j);
-                        if(connectedValve.name.equals(aName)){
-                            valve.valves.add(connectedValve);
+                        if(connectedValve.name.equals(conName)){
+                            valve.connections.add(new Connection(connectedValve, 1));
                             break;
                         }
                     }
