@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="advent.day19.game.GameFrame">
+  <grid id="27dc6" binding="gamePanel" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="896" height="744"/>
+    </constraints>
+    <properties>
+      <background color="-14144720"/>
+      <focusable value="true"/>
+      <minimumSize width="0" height="0"/>
+      <toolTipText value=""/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <grid id="90184" binding="topPanel" layout-manager="GridBagLayout">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="true"/>
+        </constraints>
+        <properties>
+          <background color="-14144720"/>
+          <focusable value="true"/>
+        </properties>
+        <border type="line" title-justification="2" title-position="2">
+          <font/>
+          <title-color color="-16777216"/>
+          <color color="-16084992"/>
+        </border>
+        <children>
+          <component id="981e7" class="javax.swing.JLabel" binding="minuteCount">
+            <constraints>
+              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="Consolas" size="60" style="1"/>
+              <foreground color="-16711907"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="1"/>
+            </properties>
+          </component>
+          <component id="258f" class="javax.swing.JLabel" binding="clayIcon">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <background color="-13947600"/>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-37611"/>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="4"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="CLAY"/>
+              <toolTipText value="CLAY"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+          </component>
+          <component id="5ea45" class="javax.swing.JLabel" binding="obsidianIcon">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-10354459"/>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="4"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="OBS"/>
+              <toolTipText value="OBSIDIAN"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+          </component>
+          <component id="e379c" class="javax.swing.JLabel" binding="materialsLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.05"/>
+            </constraints>
+            <properties>
+              <focusable value="true"/>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-394241"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="Materials:"/>
+              <verticalAlignment value="1"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+          </component>
+          <component id="98ca9" class="javax.swing.JLabel" binding="minuteLabel">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.05"/>
+            </constraints>
+            <properties>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-394241"/>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="2"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="Minute:"/>
+              <verticalAlignment value="1"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+          </component>
+          <component id="e8be8" class="javax.swing.JLabel" binding="amount1">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.05"/>
+            </constraints>
+            <properties>
+              <focusable value="true"/>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-394241"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="Amount:"/>
+              <verticalAlignment value="1"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+          </component>
+          <component id="b1df7" class="javax.swing.JLabel" binding="amount2">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.05"/>
+            </constraints>
+            <properties>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-514"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="Amount:"/>
+              <verticalAlignment value="1"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+          </component>
+          <component id="50e2f" class="javax.swing.JLabel" binding="robotsLabel">
+            <constraints>
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.05"/>
+            </constraints>
+            <properties>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-394241"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="Robots:"/>
+              <verticalAlignment value="1"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+          </component>
+          <component id="f534e" class="javax.swing.JLabel" binding="clayAmount">
+            <constraints>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="DejaVu Sans" size="36" style="1"/>
+              <foreground color="-394241"/>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="11"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="0"/>
+              <toolTipText value="Clay amount"/>
+            </properties>
+          </component>
+          <component id="b44fa" class="javax.swing.JLabel" binding="geodeAmount">
+            <constraints>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="DejaVu Sans" size="36" style="1"/>
+              <foreground color="-328449"/>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="11"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="0"/>
+              <toolTipText value="geodes"/>
+            </properties>
+          </component>
+          <component id="9972a" class="javax.swing.JLabel" binding="clayRobotAmount">
+            <constraints>
+              <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="DejaVu Sans" size="36" style="1"/>
+              <foreground color="-262913"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="0"/>
+            </properties>
+          </component>
+          <component id="9e865" class="javax.swing.JLabel" binding="obsidianRobotAmount">
+            <constraints>
+              <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="DejaVu Sans" size="36" style="1"/>
+              <foreground color="-262913"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="0"/>
+            </properties>
+          </component>
+          <component id="5616" class="javax.swing.JLabel" binding="geodeRobotAmount">
+            <constraints>
+              <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="DejaVu Sans" size="36" style="1"/>
+              <foreground color="-328449"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="0"/>
+            </properties>
+          </component>
+          <component id="46d0b" class="javax.swing.JButton" binding="buyOreBotButton">
+            <constraints>
+              <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <background color="-13223618"/>
+              <focusable value="false"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value=""/>
+              <toolTipText value="Buy an ore robot"/>
+            </properties>
+          </component>
+          <component id="bed0c" class="javax.swing.JButton" binding="buyObsidianBotButton">
+            <constraints>
+              <grid row="3" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <background color="-13223618"/>
+              <focusable value="false"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value=""/>
+              <toolTipText value="Buy an obsidian robot"/>
+            </properties>
+          </component>
+          <component id="30296" class="javax.swing.JButton" binding="nextMinuteButton" default-binding="true">
+            <constraints>
+              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <focusable value="false"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="Next Minute"/>
+            </properties>
+          </component>
+          <component id="5d729" class="javax.swing.JLabel" binding="oreRobotAmount">
+            <constraints>
+              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <focusable value="true"/>
+              <font name="DejaVu Sans" size="36" style="1"/>
+              <foreground color="-394241"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="1"/>
+            </properties>
+          </component>
+          <component id="e4441" class="javax.swing.JButton" binding="buyClayBotButton">
+            <constraints>
+              <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <background color="-13223618"/>
+              <focusable value="false"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value=""/>
+              <toolTipText value="Buy a clay robot"/>
+            </properties>
+          </component>
+          <component id="43f31" class="javax.swing.JButton" binding="buyGeodeCrackerButton">
+            <constraints>
+              <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <background color="-13223618"/>
+              <focusable value="false"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value=""/>
+              <toolTipText value="Buy a geode cracker"/>
+            </properties>
+          </component>
+          <component id="23199" class="javax.swing.JTextArea" binding="bluePrintTextArea" default-binding="true">
+            <constraints>
+              <grid row="5" column="0" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <minimum-size width="150" height="50"/>
+                <preferred-size width="150" height="50"/>
+              </grid>
+              <gridbag weightx="0.2" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <background color="-16777216"/>
+              <editable value="false"/>
+              <focusable value="false"/>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-1052172"/>
+              <lineWrap value="true"/>
+              <minimumSize width="20" height="0"/>
+              <text value="BluePrint "/>
+              <wrapStyleWord value="false"/>
+            </properties>
+          </component>
+          <component id="a8b3d" class="javax.swing.JComboBox" binding="blueprintBox">
+            <constraints>
+              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.0"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="c6a14" class="javax.swing.JTextArea" binding="stateArea">
+            <constraints>
+              <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="50"/>
+              </grid>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <background color="-13947600"/>
+              <disabledTextColor color="-16720094"/>
+              <editable value="false"/>
+              <enabled value="true"/>
+              <focusable value="false"/>
+              <font name="DejaVu Sans" size="20" style="1"/>
+              <foreground color="-16711890"/>
+              <lineWrap value="true"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <preferredSize width="24" height="24"/>
+              <text value=""/>
+              <wrapStyleWord value="true"/>
+            </properties>
+          </component>
+          <component id="b44c" class="javax.swing.JLabel" binding="oreIcon">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-1737440"/>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="4"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="ORE"/>
+              <toolTipText value="ORE"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+            <clientProperties>
+              <html.disable class="java.lang.Boolean" value="false"/>
+            </clientProperties>
+          </component>
+          <component id="2d735" class="javax.swing.JLabel" binding="obsidianAmount">
+            <constraints>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="DejaVu Sans" size="36" style="1"/>
+              <foreground color="-328449"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="0"/>
+              <toolTipText value="obsidianAmount"/>
+            </properties>
+          </component>
+          <component id="ed882" class="javax.swing.JLabel" binding="oreAmount">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <background color="-13223618"/>
+              <font name="DejaVu Sans" size="36" style="1"/>
+              <foreground color="-1"/>
+              <horizontalAlignment value="0"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="0"/>
+              <toolTipText value="Ore amount"/>
+            </properties>
+          </component>
+          <component id="f738d" class="javax.swing.JLabel" binding="geodesIcon">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.2" weighty="0.2"/>
+            </constraints>
+            <properties>
+              <font name="Consolas" size="22" style="1"/>
+              <foreground color="-2207515"/>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="4"/>
+              <maximumSize width="0" height="0"/>
+              <minimumSize width="0" height="0"/>
+              <text value="GEODE"/>
+              <toolTipText value="GEODES"/>
+              <verticalTextPosition value="1"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>
