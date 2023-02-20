@@ -1,17 +1,14 @@
 package advent.day20;
 
 public class Element{
-    public final int value, index;
-    public Element(int value, int index){
+    public final long value, originalIndex;
+    public Element(long value, int initialIndex){
         this.value = value;
-        this.index = index;
+        this.originalIndex = initialIndex;
     }
 
     @Override
     public String toString(){
-        return "{" +
-                "v=" + value +
-                ":i=" + index +
-                '}';
+        return "(" + value + ",i:" + originalIndex + ')';
     }
 }
